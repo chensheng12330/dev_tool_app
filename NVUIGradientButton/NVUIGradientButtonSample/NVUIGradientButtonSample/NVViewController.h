@@ -35,5 +35,5 @@
 - (IBAction)segmentedControlValueChanged:(UISegmentedControl *)sender;
 - (IBAction)addToColorFile:(NVUIGradientButton *)sender;
 
-
+-(void) saveColorFile;
 @end

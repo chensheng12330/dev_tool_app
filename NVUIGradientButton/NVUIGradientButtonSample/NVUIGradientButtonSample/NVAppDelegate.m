@@ -34,4 +34,19 @@
     return YES;
 }
 
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    [self.viewController saveColorFile];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    
+}
+
 @end

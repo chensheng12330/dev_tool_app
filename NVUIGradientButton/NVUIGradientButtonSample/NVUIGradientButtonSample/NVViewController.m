@@ -13,6 +13,7 @@
 #define KEY_RED  (@"red")
 #define KEY_GREE (@"gree")
 #define KEY_BLUE (@"blue")
+#define KEY_ALPHA (@"alpha")
 
 @interface NVViewController (private)
 -(NSString*) getColorFilePath;
@@ -36,8 +37,7 @@
 
 - (void)dealloc
 {
-
-
+    //NSDictionary
 	[_dynamicButton release];
 	[_redSlider release];
 	
@@ -57,10 +57,14 @@
 }
 
 /* myTableSource 结构
- NSArray: 123456789
-        [1-3]位key1: red
-        [4-6]位key2: gree
-        [7-9]位key3: blue
+ NSMutableDictionary: 
+    key:red+gree+blue+appha
+ object:
+    NSDictionary
+        key1: red   [123]/255
+        key2: gree  [89]/255
+        key3: blue  [213]/255
+        key4: alpha [23]/100
  */
 
 - (void)viewDidLoad
@@ -70,7 +74,7 @@
     //load data
     NSString *filePath = [self getColorFilePath];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager isExecutableFileAtPath:filePath])
+    if([fileManager fileExistsAtPath:filePath])
     {
         _myTableSource = [[NSMutableArray alloc] initWithContentsOfFile:filePath];
     }
@@ -85,9 +89,14 @@
 	self.dynamicButton.textShadowColor = [UIColor darkGrayColor];
 	[self sliderValueChanged];
     
-    NSString *colorValues = @"123321123";
+    self.myTableView.allowsSelectionDuringEditing = YES;
     
-    [_myTableSource addObject:colorValues];
+    //self.view set
+}
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.view endEditing:YES];
 }
 
 - (IBAction)sliderValueChanged
@@ -101,13 +110,11 @@
 	int blue = self.blueSlider.value;
     [_tfBlue setText:[NSString stringWithFormat:@"%d",blue]];
     
-    float alpha = self.alphaSlider.value;
+    float alpha = self.alphaSlider.value/100.0;
     [_tfAlpha setText:[NSString stringWithFormat:@"%.2f",alpha]];
 	
 	self.dynamicButton.tintColor = [UIColor colorWithRed:red/255.0 green:green/255.0 blue:blue/255.0 alpha:alpha];
-
 }
-
 
 - (IBAction)segmentedControlValueChanged:(UISegmentedControl *)sender
 {
@@ -129,33 +136,42 @@
     NSString *red = self.tfRed.text;
     NSString *gree= self.tfGree.text;
     NSString *blue= self.tfBlue.text;
+    NSString *alpha= self.tfAlpha.text;
     
-    if ([red isEqualToString:@""] || [gree isEqualToString:@""] || [blue isEqualToString:@""]) {
+    if ([red isEqualToString:@""] || [gree isEqualToString:@""] || [blue isEqualToString:@""] || [alpha isEqualToString:@""])
+    {
         return;
     }
     
     //key
-    NSString *colorVaules = [NSString stringWithFormat:@"%@%@%@",red,gree,blue];
+    NSString *colorVaules = [NSString stringWithFormat:@"%@%@%@%.2f",red,gree,blue,[alpha floatValue]];
     
     //查询是否已在该值
-    for (NSString *key in _myTableSource) {
+    for (NSMutableDictionary *tempDic in _myTableSource) {
+        NSString *key = [NSString stringWithFormat:@"%@%@%@%@",[tempDic objectForKey:KEY_RED],[tempDic objectForKey:KEY_GREE], [tempDic objectForKey:KEY_BLUE], [tempDic objectForKey:KEY_ALPHA]];
+        
         if ([key isEqualToString:colorVaules]) {
             return;
         }
     }
     
     //加入table source
-    [_myTableSource addObject:colorVaules];
+    NSMutableDictionary *btnMatchColor = [[NSMutableDictionary alloc] init];
+    [btnMatchColor setValue:red   forKey:KEY_RED];
+    [btnMatchColor setValue:gree  forKey:KEY_GREE];
+    [btnMatchColor setValue:blue  forKey:KEY_BLUE];
+    [btnMatchColor setValue:alpha forKey:KEY_ALPHA];
     
-    [self.myTableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:_myTableSource.count-1 inSection:0]]  withRowAnimation:UITableViewRowAnimationBottom];
+    [_myTableSource addObject:btnMatchColor];
+    [btnMatchColor release];
     
-//    NSDictionary *dic = [[NSDictionary alloc] init];
-//    [dic setValue:red   forKey:KEY_RED];
-//    [dic setValue:gree  forKey:KEY_GREE];
-//    [dic setValue:blue  forKey:KEY_BLUE];
-//    [dic release];
+    int index = _myTableSource.count;
+    index = index==0?0:index-1;
+    
+    [self.myTableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]]  withRowAnimation:UITableViewRowAnimationTop];
+    
+    [self.myTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
-
 
 - (void)viewDidUnload
 {
@@ -199,23 +215,122 @@
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier]autorelease];
     }
+    else{
+        NSArray *ary = [cell subviews];
+        for (UIView *subView  in ary) {
+            if(subView.tag == 1000)
+            {
+                [subView removeFromSuperview];
+            }
+        }
+    }
+    
+    // record color's
+    NSDictionary *btnMatchColor = [_myTableSource objectAtIndex:indexPath.row];
+    
+    int red     = [[btnMatchColor objectForKey:KEY_RED]  intValue];
+	int green   = [[btnMatchColor objectForKey:KEY_GREE] intValue];
+	int blue    = [[btnMatchColor objectForKey:KEY_BLUE] intValue];
+    float alpha = [[btnMatchColor objectForKey:KEY_ALPHA] floatValue];
     
     //cell image color
-    NVUIGradientButton *btn = [[NVUIGradientButton alloc] initWithFrame:CGRectMake(20, 4, 60, 38) style:NVUIGradientButtonStyleDefault];
-    
-    CGFloat red = self.redSlider.value;
-	CGFloat green = self.greenSlider.value;
-	CGFloat blue = self.blueSlider.value;
-	btn.tintColor = [UIColor colorWithRed:red green:green blue:blue alpha:1];
-    
+    NVUIGradientButton *btn = [[NVUIGradientButton alloc] initWithFrame:CGRectMake(15, 4, 60, 38) style:NVUIGradientButtonStyleDefault];
+	btn.tintColor = [UIColor colorWithRed:red/255.0 green:green/255.0 blue:blue/255.0 alpha:alpha];
+    btn.tag = 1000;
     [cell addSubview:btn];
     [btn release];
     
     //cell color value
-    [cell.textLabel setText:[NSString stringWithFormat:@"R:%.3f G:%.3f B:%.3f",red,green, blue]];
-    [cell.textLabel setTextAlignment:NSTextAlignmentRight];
+    UILabel *lbRed = [[[UILabel alloc] initWithFrame:CGRectMake(89, 11, 49, 21)] autorelease];
+    lbRed.tag = 1000;
+    [lbRed setTextColor:[UIColor redColor]];
+    [lbRed setBackgroundColor:[UIColor clearColor]];
+    [lbRed setText:[NSString stringWithFormat:@"R:%d",red]];
+    [cell addSubview:lbRed];
     
+    UILabel *lbGree = [[[UILabel alloc] initWithFrame:CGRectMake(146,11,49,21)] autorelease];
+    lbGree.tag = 1000;
+    [lbGree setTextColor:[UIColor greenColor]];
+    [lbGree setBackgroundColor:[UIColor clearColor]];
+    [lbGree setText:[NSString stringWithFormat:@"G:%d",green]];
+    [cell addSubview:lbGree];
+    
+    UILabel *lbBlue = [[[UILabel alloc] initWithFrame:CGRectMake(203,11,49,21)] autorelease];
+    lbBlue.tag = 1000;
+    [lbBlue setTextColor:[UIColor blueColor]];
+    [lbBlue setBackgroundColor:[UIColor clearColor]];
+    [lbBlue setText:[NSString stringWithFormat:@"B:%d",blue]];
+    [cell addSubview:lbBlue];
+    
+    
+    UILabel *lbAlpha = [[[UILabel alloc] initWithFrame:CGRectMake(260,11,49,21)] autorelease];
+    lbAlpha.tag = 1000;
+    [lbAlpha setBackgroundColor:[UIColor clearColor]];
+    [lbAlpha setText:[NSString stringWithFormat:@"a:%.2f",alpha]];
+    [cell addSubview:lbAlpha];
+    
+    
+    cell.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
     return cell;
 }
 
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *btnMatchColor = [_myTableSource objectAtIndex:indexPath.row];
+    
+    int red     = [[btnMatchColor objectForKey:KEY_RED]  intValue];
+	int green   = [[btnMatchColor objectForKey:KEY_GREE] intValue];
+	int blue    = [[btnMatchColor objectForKey:KEY_BLUE] intValue];
+    float alpha = [[btnMatchColor objectForKey:KEY_ALPHA] floatValue];
+    
+    [self.redSlider   setValue:red      animated:YES];
+    [self.greenSlider setValue:green    animated:YES];
+    [self.blueSlider  setValue:blue     animated:YES];
+    [self.alphaSlider setValue:alpha*100 animated:YES];
+    
+    [self sliderValueChanged];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [_myTableSource removeObjectAtIndex:indexPath.row];
+        
+        int randT = random()%UITableViewRowAnimationMiddle;
+        
+        [self.myTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:indexPath.row inSection:0]] withRowAnimation:randT];
+    }
+}
+
+#pragma mark - UITextFieldDelegate
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if ([textField.text isEqualToString:@""] || [textField.text intValue]>255) {
+        return;
+    }
+    
+    if (textField == self.tfRed) {
+        [self.redSlider setValue:[textField.text intValue]  animated:YES];
+    }
+    else if(textField == self.tfGree)
+    {
+        [self.greenSlider setValue:[textField.text intValue]  animated:YES];
+    }
+    else if(textField == self.tfBlue)
+    {
+        [self.blueSlider setValue:[textField.text intValue]  animated:YES];
+    }
+    else if(textField == self.tfAlpha)
+    {
+        [self.alphaSlider setValue:[textField.text floatValue]*100  animated:YES];
+    }
+    
+    [self sliderValueChanged];
+    return;
+}
+
+- (BOOL)textFieldShouldClear:(UITextField *)textField
+{
+    return YES;
+}
 @end

@@ -17,6 +17,7 @@
 		371F8EDA1591ED3F00A6082F /* NVViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 371F8ED81591ED3F00A6082F /* NVViewController_iPhone.xib */; };
 		371F8EEA1591EFA000A6082F /* NVUIGradientButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 371F8EE91591EFA000A6082F /* NVUIGradientButton.m */; };
 		378EF69415F6084B007FD971 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 378EF69315F6084B007FD971 /* arrow.png */; };
+		585EF5CD173CD90100E8F75A /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 585EF5CC173CD90100E8F75A /* icon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		371F8EE81591EFA000A6082F /* NVUIGradientButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVUIGradientButton.h; sourceTree = "<group>"; };
 		371F8EE91591EFA000A6082F /* NVUIGradientButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVUIGradientButton.m; sourceTree = "<group>"; };
 		378EF69315F6084B007FD971 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
+		585EF5CC173CD90100E8F75A /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 		371F8EB41591ED3D00A6082F = {
 			isa = PBXGroup;
 			children = (
+				585EF5CC173CD90100E8F75A /* icon.png */,
 				371F8EE31591ED5300A6082F /* lib */,
 				371F8EC91591ED3E00A6082F /* NVUIGradientButtonSample */,
 				371F8EC21591ED3E00A6082F /* Frameworks */,
@@ -170,6 +173,7 @@
 				371F8ECE1591ED3E00A6082F /* InfoPlist.strings in Resources */,
 				371F8EDA1591ED3F00A6082F /* NVViewController_iPhone.xib in Resources */,
 				378EF69415F6084B007FD971 /* arrow.png in Resources */,
+				585EF5CD173CD90100E8F75A /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,11 +261,15 @@
 		371F8EE11591ED3F00A6082F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: reven wu (KANKTAN2CL)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: reven wu (KANKTAN2CL)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NVUIGradientButtonSample/NVUIGradientButtonSample-Prefix.pch";
 				INFOPLIST_FILE = "NVUIGradientButtonSample/NVUIGradientButtonSample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "A159764B-AA73-4333-B2DB-8D7B8EAC34C0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A159764B-AA73-4333-B2DB-8D7B8EAC34C0";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -270,11 +278,15 @@
 		371F8EE21591ED3F00A6082F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: reven wu (KANKTAN2CL)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: reven wu (KANKTAN2CL)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NVUIGradientButtonSample/NVUIGradientButtonSample-Prefix.pch";
 				INFOPLIST_FILE = "NVUIGradientButtonSample/NVUIGradientButtonSample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "A159764B-AA73-4333-B2DB-8D7B8EAC34C0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A159764B-AA73-4333-B2DB-8D7B8EAC34C0";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
